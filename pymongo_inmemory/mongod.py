@@ -34,9 +34,7 @@ def cleanup():
 
 
 def clean_before_kill(signum, stack):
-    logger.warning("Received kill signal.")
-    cleanup()
-    exit()
+    pass
 
 
 # as per https://docs.python.org/3.6/library/signal.html#signals-and-threads
@@ -55,31 +53,11 @@ class MongodConfig:
 
     @property
     def port(self):
-        set_port = self._pim_context.mongod_port
-        if set_port is None:
-            return str(find_open_port(range(27017, 28000)))
-        else:
-            return str(set_port)
+        pass
 
     @property
     def connection_string(self):
-        if self._pim_context.mongo_client_host is not None:
-            if self._pim_context.mongo_client_host.startswith("mongodb://"):
-                return self._pim_context.mongo_client_host
-            else:
-                self.local_address = self._pim_context.mongo_client_host
-
-        if self.local_address is not None and self.port is not None:
-            if self._pim_context.dbname is None:
-                return "mongodb://{host}:{port}".format(
-                    host=self.local_address, port=self.port
-                )
-            else:
-                return "mongodb://{host}:{port}/{dbname}".format(
-                    host=self.local_address,
-                    port=self.port,
-                    dbname=self._pim_context.dbname,
-                )
+        pass
 
 
 class Mongod:
@@ -121,31 +99,7 @@ class Mongod:
         self.stop()
 
     def start(self):
-        self._check_lock()
-        self.log_path = os.path.join(self.data_folder, "mongod.log")
-
-        logger.info("Starting mongod with {cs}...".format(cs=self.connection_string))
-        boot_command = [
-            os.path.join(self._bin_folder, "mongod"),
-            "--dbpath",
-            self.data_folder,
-            "--logpath",
-            self.log_path,
-            "--port",
-            self.config.port,
-            "--bind_ip",
-            self.config.local_address,
-        ]
-        if self.config.engine is not None:
-            boot_command.append("--storageEngine")
-            boot_command.append(self.config.engine)
-        logger.debug(boot_command)
-        self._proc = subprocess.Popen(boot_command)
-        _popen_objs.append(self._proc)
-        while not self.is_healthy:
-            pass
-        logger.info("Started mongod.")
-        logger.info("Connect with: {cs}".format(cs=self.connection_string))
+        pass
 
     def stop(self):
         logger.info("Sending kill signal to mongod.")
@@ -157,90 +111,32 @@ class Mongod:
 
     @property
     def data_folder(self):
-        if self._using_tmp_folder:
-            return self._temp_data_folder.name
-        else:
-            return self._pim_context.mongod_data_folder
+        pass
 
     @property
     def connection_string(self):
-        if self._connection_string is not None:
-            return self._connection_string
-
-        self._connection_string = (
-            self.config.connection_string
-            if self.config.connection_string is not None
-            else None
-        )
-
-        return self._connection_string
+        pass
 
     @property
     def is_locked(self):
-        return os.path.exists(os.path.join(self.data_folder, "mongod.lock"))
+        pass
 
     @property
     def is_healthy(self):
-        db = self._client["admin"]
-        status = db.command("serverStatus")
-        try:
-            logger.debug("Getting status")
-            uptime = int(status["uptime"])
-        except subprocess.CalledProcessError:
-            logger.debug("Status: Not running")
-            return False
-        else:
-            if uptime > 0:
-                version = status["version"]
-                logger.debug(
-                    "Status: MongoDB {} running for {} secs".format(version, uptime)
-                )
-                return True
-            else:
-                logger.debug("Status: Just started.")
-                return False
+        pass
 
     def mongodump(self, database, collection):
-        dump_command = [
-            os.path.join(self._bin_folder, "mongodump"),
-            "--host",
-            self.config.local_address,
-            "--port",
-            self.config.port,
-            "--out",
-            "-",
-            "--db",
-            database,
-            "--collection",
-            collection,
-        ]
-        proc = subprocess.run(dump_command, stdout=subprocess.PIPE)
-        return proc.stdout
+        pass
 
     def logs(self):
-        with open(self.log_path, "r") as logfile:
-            return logfile.readlines()
+        pass
 
     def _clean_up(self):
         if self._using_tmp_folder:
             self._temp_data_folder.cleanup()
 
     def _check_lock(self):
-        while self.is_locked:
-            if self._using_tmp_folder:
-                raise RuntimeError(
-                    (
-                        "There is a lock file in the provided data folder. "
-                        "Make sure that no other MongoDB is running."
-                    )
-                )
-            logger.warning(
-                (
-                    "Lock file found, possibly another mock server is running. "
-                    "Changing the data folder."
-                )
-            )
-            self._temp_data_folder = TemporaryDirectory(prefix="pymongoim")
+        pass
 
 
 if __name__ == "__main__":

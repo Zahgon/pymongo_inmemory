@@ -19,22 +19,17 @@ class OperatingSystemNotFound(ValueError):
 
 
 def _coercion(constructor, value):
-    if constructor == bool:
-        return value == "True"
-    else:
-        return constructor(value)
+    pass
 
 
 def _check_environment_vars(option, fallback=None):
     "Check if `option` is defined in environment variables"
-    return os.environ.get("PYMONGOIM__{}".format(str(option).upper()), default=fallback)
+    pass
 
 
 def _check_cfg(option, filename, fallback=None):
     "Check if `option` is defined in `filename` ini file in the root folder"
-    parser = ConfigParser()
-    parser.read(filename)
-    return parser.get("pymongo_inmemory", option, fallback=fallback, raw=True)
+    pass
 
 
 def conf(option, fallback=None, optional=True, coerce_with=str):
@@ -59,42 +54,7 @@ def conf(option, fallback=None, optional=True, coerce_with=str):
     -------
     any or None: If there is a value, it'll return it otherwise it'll return `None`.
     """
-    value = _check_environment_vars(
-        option,
-        fallback=_check_cfg(
-            option,
-            "setup.cfg",
-            fallback=_check_cfg(
-                option,
-                "pymongo_inmemory.ini",
-                fallback=DEFAULT_CONF.get(option, fallback),
-            ),
-        ),
-    )
-
-    if value is None:
-        if not optional:
-            raise ValueError(
-                (
-                    "Can't determine the value of {} "
-                    "and it is not an optional parameter."
-                ).format(option)
-            )
-    else:
-        try:
-            value = _coercion(coerce_with, value)
-        except ValueError:
-            value = None
-        except Exception:
-            raise ValueError(
-                ("Can't coerce the value of {} to type {}").format(
-                    option, coerce_with.__qualname__
-                )
-            )
-
-    logger.debug("Value for {}=={}".format(option, value))
-
-    return value
+    pass
 
 
 class Context:
@@ -148,25 +108,10 @@ class Context:
         )
 
     def _build_operating_system_info(self, os_name=None):
-        os_name = conf("operating_system", os_name)
-        if os_name is None:
-            _mapping = {"Darwin": "osx", "Linux": "linux", "Windows": "windows"}
-            os_name = _mapping.get(platform.system())
-            if os_name is None:
-                raise OperatingSystemNotFound("Can't determine operating system.")
-        return os_name
+        pass
 
     def _build_download_url(self):
-        dl_url, downloaded_version = best_url(
-            self.operating_system,
-            version=self.mongo_version,
-            os_ver=self.os_version,
-        )
-
-        self.downloaded_version = downloaded_version
-        return dl_url
+        pass
 
     def _build_storage_engine(self):
-        major, minor, patch = make_semver(self.downloaded_version)
-        storage_engine_fallback = "wiredTiger" if major > 6 else "ephemeralForTest"
-        return conf("storage_engine", storage_engine_fallback)
+        pass

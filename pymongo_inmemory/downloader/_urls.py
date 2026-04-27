@@ -69,17 +69,4 @@ def best_url(os_name, version=None, os_ver=None, url_tree=None):
 
 
 def expand_url_tree(tree) -> Generator[ExpandedURL, None, None]:
-    for os_name, os_leaf in tree.items():
-        for os_version, version_leaf in os_leaf.items():
-            for major, major_leaf in version_leaf.items():
-                for minor, minor_leaf in major_leaf.items():
-                    for patch in minor_leaf["patches"]:
-                        version = "{}.{}.{}".format(major, minor, patch)
-                        major_minor = "{}.{}".format(major, minor)
-                        yield ExpandedURL(
-                            os_name,
-                            os_version,
-                            version,
-                            minor_leaf["url"].format(version),
-                            major_minor,
-                        )
+    pass

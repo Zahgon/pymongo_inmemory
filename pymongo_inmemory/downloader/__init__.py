@@ -27,15 +27,7 @@ class InvalidDownloadedFile(Exception):
 
 
 def _dl_reporter(blocknum, block_size, total_size):
-    percent_dled = blocknum * block_size / total_size * 100
-    size_dlded = blocknum * block_size / 1024 / 1024  # MBs
-    total_size = total_size / 1024 / 1024  # MBs
-    if 0 <= percent_dled % 10 <= 0.01:
-        logger.info(
-            "{:.0f} % ({:.0f} MiB of {:.0f} MiB)".format(
-                percent_dled, size_dlded, total_size
-            )
-        )
+    pass
 
 
 def _download_file(dl_url, destination_file):
